@@ -17,6 +17,7 @@ const CLEAN_COVERAGE = 'clean:coverage';
 const CLEAN_DOC = 'clean:doc';
 const TSLINT = 'tslint';
 const COMPILE_TYPESCRIPT = 'compile:typescript';
+const COPY_HTML = 'copy:html';
 const BUILD = 'build';
 const GENERATE_DOC = 'generate:doc';
 const PRETEST = 'pretest';
@@ -30,6 +31,7 @@ const TS_TEST_GLOB = './test/**/*.ts';
 const JS_TEST_GLOB = './build/test/**/*.js';
 const JS_SRC_GLOB = './build/src/**/*.js';
 const TS_GLOB = [TS_SRC_GLOB, TS_TEST_GLOB];
+const HTML_SRC_GLOB = './src/**/*.html';
 
 const tsProject = typescript.createProject('tsconfig.json');
 
@@ -78,9 +80,15 @@ gulp.task(COMPILE_TYPESCRIPT, function() {
     .pipe(gulp.dest('./build'));
 });
 
+gulp.task(COPY_HTML, function() {
+  return gulp
+    .src(HTML_SRC_GLOB, {base: '.'})
+    .pipe(gulp.dest('./build'));
+});
+
 // Runs all required steps for the build in sequence.
 gulp.task(BUILD, function(callback) {
-  runSequence(CLEAN_BUILD, TSLINT, COMPILE_TYPESCRIPT, callback);
+  runSequence(CLEAN_BUILD, TSLINT, COMPILE_TYPESCRIPT, COPY_HTML, callback);
 });
 
 // Generates a documentation based on the code comments in the *.ts files.
@@ -150,7 +158,7 @@ gulp.task(TEST, function(callback) {
 // Runs the build task and starts the server every time changes are detected.
 gulp.task(WATCH, [BUILD], function() {
   return nodemon({
-    ext: 'ts js json',
+    ext: 'ts js json html',
     script: 'build/src/server.js',
     watch: ['src/*', 'test/*'],
     env: {NODE_ENV: 'development'},
