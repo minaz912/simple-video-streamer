@@ -7,6 +7,11 @@ import * as morgan from 'morgan';
 import {Express, Request, Response} from 'express';
 
 const PORT: number = 1337;
+const VIDEOS_DIR = process.env.VIDEOS_DIR;
+
+if (!VIDEOS_DIR) {
+  throw new Error('VIDEOS_DIR not provided, please run the app using `VIDEOS_DIR=<YOUR_CUSTOM_DIR> npm start`');
+}
 
 /**
  * Basic configurations of all middleware libraries are applied here.
